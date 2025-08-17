@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DarkWatch – Regional Movie Finder</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0d0d10">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <meta name="description" content="Discover what's popular to stream in different regions.">
+  <style>
+    :root {
+      --bg:#0d0d10;
+      --bg-alt:#16171d;
+      --text:#e6e6ef;
+      --accent:#6366f1;
+      --accent-hover:#818cf8;
+      --radius:12px;
+      --warn:#fbbf24;
+      --danger:#ef4444;
+      --ok:#10b981;
+      --muted:#8b8fa3;
+      --skeleton:#1f2027;
+    }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;}
+    body { margin:0; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+    header { padding:1.25rem clamp(1rem,3vw,2rem); display:flex; flex-wrap:wrap; gap:1rem; align-items:center; background:linear-gradient(145deg,#0d0d10 0%,#181a22 100%); position:sticky;top:0;z-index:40; }
+    h1 { font-size:1.25rem; margin:0; font-weight:600; letter-spacing:.5px; display:flex; align-items:center; gap:.5rem; }
+    h1 span {color:var(--accent);}  
+    header form { flex:1; min-width:260px; display:flex; gap:.75rem; align-items:center; }
+    input[type="search"] { flex:1; background:var(--bg-alt); border:1px solid #272a33; padding:.65rem .9rem; border-radius:var(--radius); color:var(--text); font-size:.95rem; outline:none; transition:.2s border,.2s background; }
+    input[type="search"]:focus { border-color:var(--accent); background:#1f2129; }
+    select, button { background:var(--accent); border:0; color:#fff; padding:.65rem .9rem; font-size:.9rem; border-radius:var(--radius); cursor:pointer; font-weight:500; display:flex; gap:.4rem; align-items:center; transition:.2s background,.2s transform; }
+    select { background:var(--bg-alt); border:1px solid #272a33; color:var(--text); padding:.65rem .75rem; font-weight:400; min-width:140px; }
+    select:focus { border-color:var(--accent); outline:none; }
+    button:hover {background:var(--accent-hover);} button:active {transform:translateY(1px);}  
+    main { padding:1.5rem clamp(1rem,3vw,2rem) 4rem; min-height:60vh; }
+    #status { font-size:.8rem; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); margin-bottom:.75rem; }
+    .grid { display:grid; gap:1rem; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
+    .card { background:var(--bg-alt); border:1px solid #22252d; border-radius:var(--radius); overflow:hidden; position:relative; display:flex; flex-direction:column; min-height:260px; animation:fadeIn .5s ease; }
+    .poster-wrap { aspect-ratio:2/3; width:100%; position:relative; background:#13151b; overflow:hidden; }
+    .poster { width:100%;height:100%; object-fit:cover; display:block; filter:brightness(.92); transition:transform .5s ease; }
+    .card:hover .poster {transform:scale(1.05);}  
+    .content { padding:.65rem .75rem .8rem; display:flex; flex-direction:column; gap:.4rem; flex:1; }
+    .title { font-size:.85rem; font-weight:600; line-height:1.15; max-height:2.3em; overflow:hidden; }
+    .meta { font-size:.65rem; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; }
+    .actions { margin-top:auto; display:flex; gap:.4rem; flex-wrap:wrap; }
+    .small-btn { flex:1; font-size:.65rem; padding:.45rem .5rem; background:#272b36; border:1px solid #323843; color:var(--text); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:.35rem; transition:.2s background,.2s border; }
+    .small-btn:hover { background:#303543; border-color:var(--accent); color:#fff; }
+    .skeleton .poster-wrap {background:var(--skeleton);position:relative;overflow:hidden;}
+    .skeleton .poster-wrap::after, .skeleton-line::after { content:""; position:absolute; inset:0; background:linear-gradient(110deg,transparent 0%,rgba(255,255,255,0.06) 40%,transparent 80%); animation:shimmer 1.5s linear infinite; }
+    .skeleton .content * {background:var(--skeleton);border-radius:4px;color:transparent;}
+    .skeleton .title {height:1.1rem;}
+    .skeleton-line {position:relative;height:.55rem;width:60%;margin:.25rem 0;border-radius:4px;background:var(--skeleton);overflow:hidden;}
+    @keyframes shimmer { from {transform:translateX(-100%);} to {transform:translateX(100%);} }
+    @keyframes fadeIn { from {opacity:0;transform:translateY(6px);} to {opacity:1;transform:translateY(0);} }
+    #loadMore { margin:2rem auto 0; display:block; padding:.85rem 1.6rem; font-size:.85rem; background:#222630; border:1px solid #2c303b; border-radius:var(--radius); color:var(--text); }
+    #loadMore:hover {border-color:var(--accent);background:#2a2f3b;}
+    footer { padding:3rem 1rem 4rem; font-size:.65rem; text-align:center; color:var(--muted); }
+    .tag {background:#1f2532;padding:.15rem .4rem;border-radius:4px;font-size:.55rem;letter-spacing:.5px;}
+    .rating {color:var(--warn);font-weight:600;}
+    .hidden {display:none!important;}
+    .pill-badge { position:absolute;top:.5rem;left:.5rem; background:linear-gradient(135deg,#6366f1,#8b5cf6); padding:.3rem .55rem; font-size:.55rem; text-transform:uppercase; letter-spacing:.5px; font-weight:600; border-radius:6px; box-shadow:0 2px 4px -1px rgba(0,0,0,.4); }
+    @media (max-width:640px){ header {gap:.75rem;} h1 {width:100%;} main {padding:1rem 1rem 3.5rem;} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dark<span>Watch</span></h1>
+    <form id="searchForm">
+      <input id="query" type="search" placeholder="Search titles (leave empty for popular)"/>
+      <select id="region" title="Region">
+        <option value="en_ZA|ZA">South Africa</option>
+        <option value="en_US|US" selected>United States</option>
+        <option value="en_GB|GB">United Kingdom</option>
+        <option value="en_AU|AU">Australia</option>
+        <option value="de_DE|DE">Germany</option>
+        <option value="fr_FR|FR">France</option>
+        <option value="es_ES|ES">Spain</option>
+        <option value="pt_BR|BR">Brazil</option>
+        <option value="ja_JP|JP">Japan</option>
+      </select>
+      <button type="submit" id="goBtn">Go</button>
+    </form>
+  </header>
+  <main>
+    <div id="status">Ready</div>
+    <div class="grid" id="results"></div>
+    <button id="loadMore" class="hidden">Load more</button>
+  </main>
+  <footer>
+    DarkWatch © <span id="year"></span>. Data from JustWatch (unofficial), YouTube, optional OMDb.
+  </footer>
+
+  <template id="cardTemplate">
+    <div class="card">
+      <div class="poster-wrap">
+        <span class="pill-badge hidden">NEW</span>
+        <img class="poster" loading="lazy" alt="">
+      </div>
+      <div class="content">
+        <div class="title"></div>
+        <div class="meta"></div>
+        <div class="actions">
+          <button class="small-btn trailer-btn" type="button">Trailer</button>
+          <button class="small-btn open-btn" type="button">Open</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <dialog id="trailerDialog">
+    <form method="dialog">
+      <button style="position:absolute;right:.75rem;top:.5rem;background:#272b36;border:1px solid #323843;border-radius:6px;padding:.4rem .7rem;color:var(--text);cursor:pointer;">Close</button>
+    </form>
+    <div id="trailerContainer" style="width:min(100%,860px);max-width:90vw;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;"></div>
+  </dialog>
+
+  <script>
+    const YOUTUBE_API_KEY = ""; // Put your YouTube Data API v3 key (optional but needed for trailers)
+    const OMDB_API_KEY = "";    // Optional for ratings. Leave blank to skip.
+
+    const state = { page:1, locale:"en_US", appleCountry:"US", loading:false, query:"", results:[] };
+    const els = { form: document.getElementById('searchForm'), query: document.getElementById('query'), region: document.getElementById('region'), results: document.getElementById('results'), status: document.getElementById('status'), loadMore: document.getElementById('loadMore'), cardTemplate: document.getElementById('cardTemplate'), trailerDialog: document.getElementById('trailerDialog'), trailerContainer: document.getElementById('trailerContainer'), };
+    document.getElementById('year').textContent = new Date().getFullYear();
+    function setStatus(msg) { els.status.textContent = msg; }
+    function skeleton(count=12) { const frag = document.createDocumentFragment(); for (let i=0;i<count;i++){ const div = document.createElement('div'); div.className="card skeleton"; div.innerHTML = `\n          <div class="poster-wrap"></div>\n          <div class="content">\n            <div class="title"></div>\n            <div class="skeleton-line" style="width:40%"></div>\n            <div class="skeleton-line" style="width:55%"></div>\n            <div class="skeleton-line" style="width:30%"></div>\n          </div>\n        `; frag.appendChild(div); } els.results.appendChild(frag); }
+    function clearSkeleton() { els.results.querySelectorAll('.skeleton').forEach(n=>n.remove()); }
+    async function fetchPopular({page, locale, query}) { const url = `https://apis.justwatch.com/content/titles/${locale}/popular`; const body = { page, page_size: 20, content_types: ["movie"], }; if (query) body.query = query; const res = await fetch(url, { method: "POST", headers: { "Content-Type":"application/json", "Accept":"application/json" }, body: JSON.stringify(body) }); if(!res.ok) throw new Error("Fetch failed: "+res.status); return res.json(); }
+    async function enrichWithRatings(items) { if(!OMDB_API_KEY) return items; const tasks = items.slice(0,10).map(async item=>{ if(!item.title) return; try { const y = item.original_release_year || ""; const r = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(item.title)}&y=${y}&apikey=${OMDB_API_KEY}`); const data = await r.json(); if(data && data.imdbRating && data.imdbRating !== "N/A") { item.imdbRating = data.imdbRating; } } catch(e){} }); await Promise.allSettled(tasks); return items; }
+    function buildCard(item){ const node = els.cardTemplate.content.firstElementChild.cloneNode(true); const img = node.querySelector('.poster'); const titleEl = node.querySelector('.title'); const metaEl = node.querySelector('.meta'); const trailerBtn = node.querySelector('.trailer-btn'); const openBtn = node.querySelector('.open-btn'); const badge = node.querySelector('.pill-badge'); const title = item.title || item.original_title || "Untitled"; titleEl.textContent = title; if(item.original_release_year && (new Date().getFullYear() - item.original_release_year) <= 1) { badge.classList.remove('hidden'); badge.textContent = 'NEW'; } const poster = (item.poster || item.poster_blur_url || item.backdrops?.[0]) ? formatPoster(item) : ""; if (poster){ img.src = poster; img.alt = title; } else { img.alt = "No poster"; } const metaBits = []; if(item.original_release_year) metaBits.push(item.original_release_year); if(item.imdbRating) metaBits.push(`IMDb ${item.imdbRating}`); metaEl.innerHTML = metaBits.join(" • ") || "&nbsp;"; trailerBtn.addEventListener('click', ()=>openTrailer(title)); openBtn.addEventListener('click', ()=>{ if(item.offers && item.offers.length){ const first = item.offers[0]; if(first.urls && first.urls.standard_web){ window.open(first.urls.standard_web,'_blank'); return; } } window.open(`https://www.google.com/search?q=${encodeURIComponent(title + " streaming")}`,'_blank'); }); return node; }
+    function formatPoster(item){ let p = item.poster || item.poster_blur_url; if(!p) return ""; if(p.startsWith('/')) { return 'https://images.justwatch.com' + p.replace('{profile}','s332'); } return p; }
+    async function render() { clearSkeleton(); const frag = document.createDocumentFragment(); state.results.forEach(item=>{ frag.appendChild(buildCard(item)); }); if(state.page === 1) { els.results.innerHTML = ""; } els.results.appendChild(frag); els.loadMore.classList.toggle('hidden', state.results.length === 0); }
+    async function load(reset=false){ if(state.loading) return; state.loading = true; setStatus("Loading..."); if(reset){ state.page = 1; state.results = []; els.results.innerHTML = ""; } skeleton(state.page === 1 ? 12 : 6); try { const data = await fetchPopular({page:state.page, locale:state.locale, query:state.query.trim() || undefined}); const items = (data && data.items) || []; await enrichWithRatings(items); if(items.length){ state.results = state.results.concat(items); await render(); state.page++; setStatus(`${state.results.length} loaded${state.query ? ' (search)' : ''}`); } else { if(state.page === 1) { els.results.innerHTML = "<p style='opacity:.6'>No results.</p>"; } setStatus("No more results"); els.loadMore.classList.add('hidden'); } } catch(e){ console.error(e); setStatus("Error: " + e.message); } finally { clearSkeleton(); state.loading = false; } }
+    async function openTrailer(title){ if(!YOUTUBE_API_KEY){ alert("YouTube API key not set."); return; } try { els.trailerContainer.innerHTML = "<div style='display:flex;align-items:center;justify-content:center;height:100%;color:#888;font:14px system-ui;'>Loading trailer...</div>"; if(!els.trailerDialog.open) els.trailerDialog.showModal(); const q = encodeURIComponent(title + " official trailer"); const ytURL = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${q}&key=${YOUTUBE_API_KEY}`; const r = await fetch(ytURL); if(!r.ok) throw new Error("YouTube error"); const j = await r.json(); const vid = j.items && j.items[0]?.id?.videoId; if(!vid) throw new Error("No trailer"); els.trailerContainer.innerHTML = `\n          <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vid}?autoplay=1&rel=0"\n           style="border:0;" allow="accelerometer;autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>`; } catch(e){ els.trailerContainer.innerHTML = "<div style='display:flex;align-items:center;justify-content:center;height:100%;padding:1rem;text-align:center;font:14px system-ui;'>Trailer unavailable.<br>"+e.message+"</div>"; } }
+    els.form.addEventListener('submit', e=>{ e.preventDefault(); state.query = els.query.value; load(true); });
+    els.region.addEventListener('change', ()=>{ const [locale, apple] = els.region.value.split('|'); state.locale = locale; state.appleCountry = apple; load(true); });
+    els.loadMore.addEventListener('click', ()=>load(false));
+    document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && els.trailerDialog.open){ els.trailerDialog.close(); els.trailerContainer.innerHTML = ""; } });
+    if('serviceWorker' in navigator){ navigator.serviceWorker.register('./service-worker.js').catch(()=>{}); }
+    load(true);
+  </script>
+</body>
+</html>
