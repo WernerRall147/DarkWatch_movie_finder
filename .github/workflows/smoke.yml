@@ -1,0 +1,65 @@
+name: Smoke Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+    name: HTTP 200 checks and manifest validation
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Deploy to GitHub Pages (if main branch)
+        if: github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+        
+      - name: Upload artifact (if main branch)
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+          
+      - name: Deploy to GitHub Pages (if main branch)
+        if: github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v4
+        
+      - name: Wait for deployment
+        if: github.ref == 'refs/heads/main'
+        run: sleep 30
+        
+      - name: Check core files (GitHub Pages URL)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          BASE_URL="https://wernerrall147.github.io/DarkWatch_movie_finder"
+          
+          echo "Checking $BASE_URL/index.html"
+          curl -f -s -o /dev/null "$BASE_URL/" || curl -f -s -o /dev/null "$BASE_URL/index.html"
+          
+          echo "Checking $BASE_URL/manifest.json"
+          curl -f -s -o /dev/null "$BASE_URL/manifest.json"
+          
+          echo "Checking $BASE_URL/service-worker.js"
+          curl -f -s -o /dev/null "$BASE_URL/service-worker.js"
+          
+          echo "All HTTP 200 checks passed!"
+          
+      - name: Check core files (local for PR)
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "Checking local files exist for PR"
+          test -f index.html && echo "✓ index.html exists"
+          test -f manifest.json && echo "✓ manifest.json exists" 
+          test -f service-worker.js && echo "✓ service-worker.js exists"
+          
+      - name: Validate manifest.json with jq
+        run: |
+          echo "Validating manifest.json is valid JSON"
+          jq empty manifest.json
+          echo "✓ manifest.json is valid JSON"

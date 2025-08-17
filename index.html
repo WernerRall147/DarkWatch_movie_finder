@@ -4,10 +4,24 @@
   <meta charset="UTF-8" />
   <title>DarkWatch – Regional Movie Finder</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0d0d10">
+  <meta name="theme-color" content="#6366f1">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icon-192.png">
-  <meta name="description" content="Discover what's popular to stream in different regions.">
+  <meta name="description" content="Discover what's popular to stream in different regions. Search movies, watch trailers, and find streaming availability across countries.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wernerrall147.github.io/DarkWatch_movie_finder/">
+  <meta property="og:title" content="DarkWatch - Regional Movie Finder">
+  <meta property="og:description" content="Discover what's popular to stream in different regions. Search movies, watch trailers, and find streaming availability across countries.">
+  <meta property="og:image" content="https://wernerrall147.github.io/DarkWatch_movie_finder/icon-512.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://wernerrall147.github.io/DarkWatch_movie_finder/">
+  <meta property="twitter:title" content="DarkWatch - Regional Movie Finder">
+  <meta property="twitter:description" content="Discover what's popular to stream in different regions. Search movies, watch trailers, and find streaming availability across countries.">
+  <meta property="twitter:image" content="https://wernerrall147.github.io/DarkWatch_movie_finder/icon-512.png">
   <style>
     :root {
       --bg:#0d0d10;
@@ -60,16 +74,47 @@
     .tag {background:#1f2532;padding:.15rem .4rem;border-radius:4px;font-size:.55rem;letter-spacing:.5px;}
     .rating {color:var(--warn);font-weight:600;}
     .hidden {display:none!important;}
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
     .pill-badge { position:absolute;top:.5rem;left:.5rem; background:linear-gradient(135deg,#6366f1,#8b5cf6); padding:.3rem .55rem; font-size:.55rem; text-transform:uppercase; letter-spacing:.5px; font-weight:600; border-radius:6px; box-shadow:0 2px 4px -1px rgba(0,0,0,.4); }
+    
+    /* Reduced motion handling */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .skeleton .poster-wrap::after, .skeleton-line::after {
+        animation: none;
+      }
+    }
+    
     @media (max-width:640px){ header {gap:.75rem;} h1 {width:100%;} main {padding:1rem 1rem 3.5rem;} }
   </style>
 </head>
 <body>
-  <header>
+  <header role="banner">
     <h1>Dark<span>Watch</span></h1>
-    <form id="searchForm">
-      <input id="query" type="search" placeholder="Search titles (leave empty for popular)"/>
-      <select id="region" title="Region">
+    <form id="searchForm" role="search" aria-label="Search movies">
+      <label for="query" class="sr-only">Search movies</label>
+      <input id="query" type="search" placeholder="Search titles (leave empty for popular)" 
+             data-test="search-input" 
+             aria-label="Search for movie titles"/>
+      <label for="region" class="sr-only">Select region</label>
+      <select id="region" title="Region" 
+              data-test="region-select" 
+              aria-label="Select streaming region">
         <option value="en_ZA|ZA">South Africa</option>
         <option value="en_US|US" selected>United States</option>
         <option value="en_GB|GB">United Kingdom</option>
@@ -80,15 +125,15 @@
         <option value="pt_BR|BR">Brazil</option>
         <option value="ja_JP|JP">Japan</option>
       </select>
-      <button type="submit" id="goBtn">Go</button>
+      <button type="submit" id="goBtn" aria-label="Search for movies">Go</button>
     </form>
   </header>
-  <main>
-    <div id="status">Ready</div>
-    <div class="grid" id="results"></div>
-    <button id="loadMore" class="hidden">Load more</button>
+  <main role="main">
+    <div id="status" aria-live="polite" aria-atomic="true">Ready</div>
+    <div class="grid" id="results" role="region" aria-label="Movie results"></div>
+    <button id="loadMore" class="hidden" aria-label="Load more movies">Load more</button>
   </main>
-  <footer>
+  <footer role="contentinfo">
     DarkWatch © <span id="year"></span>. Data from JustWatch (unofficial), YouTube, optional OMDb.
   </footer>
 
@@ -102,16 +147,16 @@
         <div class="title"></div>
         <div class="meta"></div>
         <div class="actions">
-          <button class="small-btn trailer-btn" type="button">Trailer</button>
-          <button class="small-btn open-btn" type="button">Open</button>
+          <button class="small-btn trailer-btn" type="button" aria-label="Watch trailer">Trailer</button>
+          <button class="small-btn open-btn" type="button" aria-label="Open streaming link">Open</button>
         </div>
       </div>
     </div>
   </template>
 
-  <dialog id="trailerDialog">
+  <dialog id="trailerDialog" aria-label="Movie trailer player">
     <form method="dialog">
-      <button style="position:absolute;right:.75rem;top:.5rem;background:#272b36;border:1px solid #323843;border-radius:6px;padding:.4rem .7rem;color:var(--text);cursor:pointer;">Close</button>
+      <button aria-label="Close trailer dialog" style="position:absolute;right:.75rem;top:.5rem;background:#272b36;border:1px solid #323843;border-radius:6px;padding:.4rem .7rem;color:var(--text);cursor:pointer;">Close</button>
     </form>
     <div id="trailerContainer" style="width:min(100%,860px);max-width:90vw;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;"></div>
   </dialog>

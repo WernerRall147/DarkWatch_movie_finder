@@ -1,13 +1,36 @@
 {
-  "name": "DarkWatch",
+  "id": "/",
+  "name": "DarkWatch - Regional Movie Finder",
   "short_name": "DarkWatch",
-  "start_url": ".",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
   "background_color": "#0d0d10",
-  "theme_color": "#0d0d10",
-  "description": "Regional movie finder with trailers.",
+  "theme_color": "#6366f1",
+  "description": "Discover what's popular to stream in different regions. Search movies, watch trailers, and find streaming availability across countries.",
+  "categories": ["entertainment", "movies", "streaming"],
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Search Movies",
+      "short_name": "Search", 
+      "description": "Search for movies across regions",
+      "url": "./?action=search",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Popular Movies",
+      "short_name": "Popular",
+      "description": "Browse popular movies",
+      "url": "./?action=popular", 
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
   ]
 }

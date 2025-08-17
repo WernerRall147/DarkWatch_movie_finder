@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Page Not Found - DarkWatch</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0d0d10">
+  <meta name="description" content="Page not found. Redirecting to DarkWatch - Regional Movie Finder.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wernerrall147.github.io/DarkWatch_movie_finder/">
+  <meta property="og:title" content="DarkWatch - Regional Movie Finder">
+  <meta property="og:description" content="Discover what's popular to stream in different regions. Search movies, watch trailers, and find streaming availability across countries.">
+  <meta property="og:image" content="https://wernerrall147.github.io/DarkWatch_movie_finder/icon-512.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://wernerrall147.github.io/DarkWatch_movie_finder/">
+  <meta property="twitter:title" content="DarkWatch - Regional Movie Finder">
+  <meta property="twitter:description" content="Discover what's popular to stream in different regions. Search movies, watch trailers, and find streaming availability across countries.">
+  <meta property="twitter:image" content="https://wernerrall147.github.io/DarkWatch_movie_finder/icon-512.png">
+  
+  <!-- Meta refresh fallback -->
+  <meta http-equiv="refresh" content="0; url=./">
+  
+  <style>
+    :root {
+      --bg:#0d0d10;
+      --bg-alt:#16171d;
+      --text:#e6e6ef;
+      --accent:#6366f1;
+      --accent-hover:#818cf8;
+      --radius:12px;
+      --muted:#8b8fa3;
+    }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;}
+    body { 
+      margin:0; 
+      background:var(--bg); 
+      color:var(--text); 
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      text-align:center;
+      padding:2rem;
+    }
+    .container {
+      max-width:500px;
+      padding:2rem;
+      background:var(--bg-alt);
+      border-radius:var(--radius);
+      border:1px solid #22252d;
+    }
+    h1 { 
+      font-size:2rem; 
+      margin:0 0 1rem 0; 
+      font-weight:600; 
+      color:var(--accent);
+    }
+    p { 
+      color:var(--muted); 
+      margin:1rem 0; 
+      line-height:1.5;
+    }
+    .btn {
+      display:inline-block;
+      background:var(--accent);
+      color:#fff;
+      padding:0.75rem 1.5rem;
+      text-decoration:none;
+      border-radius:var(--radius);
+      font-weight:500;
+      margin-top:1rem;
+      transition:background 0.2s;
+    }
+    .btn:hover {
+      background:var(--accent-hover);
+    }
+    .redirect-text {
+      font-size:0.875rem;
+      margin-top:1.5rem;
+      opacity:0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>404 - Page Not Found</h1>
+    <p>The page you're looking for doesn't exist, but don't worry! You'll be redirected to DarkWatch automatically.</p>
+    <a href="./" class="btn">Go to DarkWatch</a>
+    <p class="redirect-text">If you're not redirected automatically, click the button above.</p>
+  </div>
+  
+  <script>
+    // JavaScript fallback for redirect
+    if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+      setTimeout(() => {
+        window.location.href = './';
+      }, 100);
+    }
+  </script>
+</body>
+</html>

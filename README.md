@@ -1,5 +1,10 @@
 # DarkWatch
 
+## CI Status
+
+[![Smoke Tests](https://github.com/WernerRall147/DarkWatch_movie_finder/workflows/Smoke%20Tests/badge.svg)](https://github.com/WernerRall147/DarkWatch_movie_finder/actions/workflows/smoke.yml)
+[![Link Checker](https://github.com/WernerRall147/DarkWatch_movie_finder/workflows/Link%20Checker/badge.svg)](https://github.com/WernerRall147/DarkWatch_movie_finder/actions/workflows/links.yml)
+
 Regional Movie Finder (static front-end prototype).  
 Fetches popular (and optionally searched) movie titles per locale using **unofficial** JustWatch endpoints. Optional trailer lookup via YouTube Data API and IMDb ratings via OMDb.
 
